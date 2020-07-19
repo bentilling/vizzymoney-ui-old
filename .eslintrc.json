@@ -4,9 +4,11 @@
         "es2020": true
     },
     "extends": [
+        "airbnb",
         "plugin:react/recommended",
-        "airbnb"
+        "plugin:prettier/recommended"
     ],
+    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -18,5 +20,6 @@
         "react"
     ],
     "rules": {
+        "react/jsx-filename-extension": "off"
     }
 }
