@@ -1,50 +1,45 @@
 import React from 'react';
-import { Table } from 'semantic-ui-react';
+import { Dimmer, Loader, Message } from 'semantic-ui-react';
 import api from '../api';
 
+import TableView from './TableView';
+
+const HEADERS = [
+  { field: 'Account', desc: 'Account' },
+  { field: 'Payee', desc: 'Payee' },
+  { field: 'Category', desc: 'Category' },
+  { field: 'Outflow', desc: 'Outflow' },
+  { field: 'Date', desc: 'Date' },
+];
 class TransactionView extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { data: [] };
+    this.state = { data: [], error: '' };
   }
 
   componentDidMount() {
     api
       .get('transactions')
-      .then((results) => this.setState({ data: results.data }));
+      .then((results) => this.setState({ data: results.data }))
+      .catch((err) => this.setState({ error: err.message }));
   }
 
   render() {
-    const { data } = this.state;
-    console.log(data);
-    const headers =
-      data.length > 0
-        ? Object.keys(data[0]).map((column) => (
-          <Table.HeaderCell key={column}>{column}</Table.HeaderCell>
-          ))
-        : '';
-    const rows =
-      data.length > 0
-        ? data.map((record) => {
-            return (
-              <Table.Row>
-                {Object.values(record).map((val) => {
-                  return <Table.Cell>{val}</Table.Cell>;
-                })}
-              </Table.Row>
-            );
-          })
-        : '';
-
-    return (
-      <div>
-        <Table celled>
-          <Table.Header>
-            <Table.Row>{headers}</Table.Row>
-          </Table.Header>
-          <Table.Body>{rows}</Table.Body>
-        </Table>
-      </div>
+    const { data, error } = this.state;
+    if (error) {
+      return (
+        <Message error>
+          <Message.Header>{error}</Message.Header>
+          <p>Please try again.</p>
+        </Message>
+      );
+    }
+    return data.length ? (
+      <TableView data={data} columns={HEADERS} />
+    ) : (
+      <Dimmer active>
+        <Loader>Loading...</Loader>
+      </Dimmer>
     );
   }
 }
